@@ -2,18 +2,21 @@ import 'package:firstpay/app/localization/app_strings.dart';
 import 'package:firstpay/app/theme/firstpay_colors.dart';
 import 'package:firstpay/app/theme/firstpay_spacing.dart';
 import 'package:firstpay/core/widgets/firstpay_logo.dart';
+import 'package:firstpay/features/authentication/application/auth_controller.dart';
 import 'package:firstpay/features/authentication/presentation/widgets/auth_primary_button.dart';
 import 'package:firstpay/features/authentication/presentation/widgets/auth_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,13 +30,45 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    _formKey.currentState?.validate();
+    if (_formKey.currentState?.validate() != true) return;
+    final succeeded = await ref
+        .read(authControllerProvider.notifier)
+        .signIn(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+    if (succeeded) {
+      TextInput.finishAutofillContext(shouldSave: _rememberMe);
+    }
+  }
+
+  Future<void> _forgotPassword() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(AppStrings.emailRequiredMessage)),
+      );
+      return;
+    }
+    await ref.read(authControllerProvider.notifier).sendPasswordReset(email);
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthUiState>(authControllerProvider, (previous, next) {
+      final message = next.errorMessage ?? next.successMessage;
+      if (message != null &&
+          message != previous?.errorMessage &&
+          message != previous?.successMessage) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
+    });
+    final authState = ref.watch(authControllerProvider);
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -166,7 +201,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: TextButton(
-                                        onPressed: () {},
+                                        onPressed: authState.isLoading
+                                            ? null
+                                            : _forgotPassword,
                                         child: const Text(
                                           AppStrings.forgotPassword,
                                         ),
@@ -177,6 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     AuthPrimaryButton(
                                       label: AppStrings.signIn,
+                                      isLoading: authState.isLoading,
                                       onPressed: _submit,
                                     ),
                                   ],

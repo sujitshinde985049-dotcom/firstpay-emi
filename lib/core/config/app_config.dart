@@ -1,14 +1,13 @@
 class AppConfig {
-  const AppConfig({required this.supabaseUrl, required this.supabaseAnonKey});
+  const AppConfig({required this.supabaseUrl, required this.publishableKey});
 
   const AppConfig.fromEnvironment()
     : supabaseUrl = const String.fromEnvironment('SUPABASE_URL'),
-      supabaseAnonKey = const String.fromEnvironment('SUPABASE_ANON_KEY');
+      publishableKey = const String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
 
   final String supabaseUrl;
-  final String supabaseAnonKey;
+  final String publishableKey;
 
   bool get isSupabaseConfigured =>
-      Uri.tryParse(supabaseUrl)?.hasScheme == true &&
-      supabaseAnonKey.isNotEmpty;
+      Uri.tryParse(supabaseUrl)?.hasScheme == true && publishableKey.isNotEmpty;
 }

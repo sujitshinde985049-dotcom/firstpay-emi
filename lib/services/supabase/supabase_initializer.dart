@@ -6,7 +6,7 @@ abstract final class SupabaseInitializer {
     if (!config.isSupabaseConfigured) return;
     await Supabase.initialize(
       url: config.supabaseUrl,
-      publishableKey: config.supabaseAnonKey,
+      publishableKey: config.publishableKey,
     );
   }
 }

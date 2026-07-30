@@ -5,13 +5,13 @@ void main() {
   test('reports complete Supabase configuration', () {
     const config = AppConfig(
       supabaseUrl: 'https://example.supabase.co',
-      supabaseAnonKey: 'demo-anon-key',
+      publishableKey: 'demo-anon-key',
     );
     expect(config.isSupabaseConfigured, isTrue);
   });
 
   test('rejects incomplete Supabase configuration', () {
-    const config = AppConfig(supabaseUrl: '', supabaseAnonKey: '');
+    const config = AppConfig(supabaseUrl: '', publishableKey: '');
     expect(config.isSupabaseConfigured, isFalse);
   });
 }
