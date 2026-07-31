@@ -65,4 +65,16 @@ class AuthController extends StateNotifier<AuthUiState> {
       return false;
     }
   }
+
+  Future<bool> signOut() async {
+    state = const AuthUiState(isLoading: true);
+    try {
+      await _repository.signOut();
+      state = const AuthUiState();
+      return true;
+    } on AuthFailure catch (error) {
+      state = AuthUiState(errorMessage: error.message);
+      return false;
+    }
+  }
 }

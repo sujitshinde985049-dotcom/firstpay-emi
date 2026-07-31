@@ -18,4 +18,9 @@ class UnconfiguredAuthRepository implements AuthRepository {
   }) {
     throw const AuthFailure(_message);
   }
+
+  @override
+  Future<void> signOut() {
+    throw const AuthFailure(_message);
+  }
 }

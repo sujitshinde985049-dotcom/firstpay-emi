@@ -5,6 +5,8 @@ abstract interface class AuthRepository {
     required String email,
     required String redirectTo,
   });
+
+  Future<void> signOut();
 }
 
 class AuthFailure implements Exception {

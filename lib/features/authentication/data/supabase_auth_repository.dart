@@ -41,6 +41,21 @@ class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
+  @override
+  Future<void> signOut() async {
+    try {
+      await _client.auth.signOut();
+    } on AuthException {
+      throw const AuthFailure(
+        'Unable to sign out right now. Please try again.',
+      );
+    } on Object {
+      throw const AuthFailure(
+        'Unable to sign out right now. Please try again.',
+      );
+    }
+  }
+
   String _friendlyMessage(AuthException error) {
     final message = error.message.toLowerCase();
     if (message.contains('invalid login credentials')) {

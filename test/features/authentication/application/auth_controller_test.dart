@@ -4,8 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _RecordingRepository implements AuthRepository {
   bool fail = false;
+  bool signedOut = false;
   String? signInEmail;
   String? resetRedirect;
+
+  @override
+  Future<void> signOut() async {
+    if (fail) throw const AuthFailure('Safe sign out error');
+    signedOut = true;
+  }
 
   @override
   Future<void> signIn({required String email, required String password}) async {
@@ -67,5 +74,15 @@ void main() {
 
     expect(succeeded, isFalse);
     expect(controller.state.errorMessage, 'Safe authentication error');
+  });
+
+  test('logout delegates to the auth repository', () async {
+    final repository = _RecordingRepository();
+    final controller = AuthController(repository);
+
+    final succeeded = await controller.signOut();
+
+    expect(succeeded, isTrue);
+    expect(repository.signedOut, isTrue);
   });
 }
