@@ -40,6 +40,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         context.go(AppRoutes.dashboard);
       case DashboardDestination.patsansthas:
         context.go(AppRoutes.organizations);
+      case DashboardDestination.customers:
+        context.go(AppRoutes.customers);
+      case DashboardDestination.upiAutopay:
+        context.go(AppRoutes.upiMandates);
+      case DashboardDestination.eNach:
+        context.go(AppRoutes.enachMandates);
+      case DashboardDestination.reports:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reports are coming soon.')),
+        );
       case DashboardDestination.settings:
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Settings are coming soon.')),

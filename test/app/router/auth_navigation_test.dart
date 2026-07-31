@@ -109,16 +109,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Dashboard'), findsNWidgets(2));
-    for (final label in ['Patsansthas', 'Settings', 'Logout']) {
-      expect(find.text(label), findsOneWidget);
-    }
-    for (final removedLabel in [
+    for (final label in [
+      'Patsansthas',
       'Customers',
       'UPI AutoPay',
       'e-NACH',
       'Reports',
+      'Settings',
+      'Logout',
     ]) {
-      expect(find.text(removedLabel), findsNothing);
+      expect(find.text(label), findsOneWidget);
     }
   });
 
